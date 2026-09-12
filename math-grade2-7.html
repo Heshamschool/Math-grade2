@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>الرياضيات - الصف الثاني</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=Baloo+2:wght@500;700&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --sky:#3BB4E5; --sky-dark:#1C93C7;
+    --sun:#FFC93C; --coral:#FF6F5E; --mint:#2FD4B2; --grape:#8B6DD9;
+    --gold:#C9962A; --gold-dark:#9c740f;
+    --paper:#FFFBF2; --ink:#233752; --ink-soft:#5C7089; --line:#E4E9F0;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Cairo', sans-serif;
+    background:
+      radial-gradient(circle at 12% 8%, #FFF4D6 0%, transparent 40%),
+      radial-gradient(circle at 90% 12%, #E4F7FF 0%, transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:18px 12px 40px;
+  }
+  .app{width:100%;max-width:640px;}
+
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:16px;}
+  .brand{display:flex;align-items:center;gap:10px;}
+  .brand-badge{width:44px;height:44px;border-radius:14px;background:linear-gradient(155deg,var(--sky),var(--sky-dark));display:flex;align-items:center;justify-content:center;font-size:22px;color:#fff;box-shadow:0 4px 0 #1477a0;flex-shrink:0;}
+  .brand-title{font-weight:800;font-size:19px;line-height:1.1;}
+  .brand-sub{font-weight:500;font-size:12.5px;color:var(--ink-soft);}
+
+  .card{background:#fff;border:3px solid var(--line);border-radius:26px;padding:22px 18px 26px;box-shadow:0 8px 0 var(--line);position:relative;overflow:hidden;}
+
+  /* ---------- setup screen ---------- */
+  .field-label{font-weight:800;font-size:14.5px;margin-bottom:8px;display:block;}
+  .field-hint{font-size:12px;color:var(--ink-soft);font-weight:600;margin-bottom:8px;}
+  input#nameInput{
+    width:100%;border:2.5px solid var(--line);border-radius:16px;
+    padding:14px;font-family:inherit;font-size:17px;font-weight:800;color:var(--ink);
+    background:#F8FAFD;text-align:center;
+  }
+  input#nameInput:focus{outline:none;border-color:var(--sky);}
+
+  .time-row{display:flex;gap:10px;margin-top:18px;}
+  .time-opt{
+    flex:1;background:#F8FAFD;border:2.5px solid var(--line);border-radius:16px;
+    padding:12px 6px;text-align:center;cursor:pointer;font-weight:800;font-size:15px;
+    color:var(--ink-soft);
+  }
+  .time-opt .sub{display:block;font-size:11.5px;font-weight:600;margin-top:2px;}
+  .time-opt.active{border-color:var(--sky-dark);background:#E9F6FC;color:var(--sky-dark);}
+
+  .start-btn{
+    display:block;width:100%;margin-top:20px;background:linear-gradient(155deg,var(--mint),#1fc19d);
+    border:none;color:#fff;font-family:inherit;font-weight:800;font-size:16px;padding:15px;
+    border-radius:16px;box-shadow:0 5px 0 #17a583;cursor:pointer;
+  }
+  .start-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #17a583;}
+  .start-btn[disabled]{opacity:.5;cursor:not-allowed;}
+  .family-note{background:#FFF7E0;border:1.5px dashed #F0D48A;border-radius:14px;padding:10px 12px;font-size:12.5px;font-weight:700;color:#8a6a10;margin-top:16px;text-align:center;}
+
+  /* ---------- game header ---------- */
+  .player-banner{text-align:center;margin-bottom:14px;}
+  .q-progress{font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:4px;}
+  .player-name{font-weight:900;font-size:26px;color:var(--sky-dark);line-height:1.1;}
+  .q-dots{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-top:8px;}
+  .qdot{width:16px;height:8px;border-radius:5px;background:var(--line);}
+  .qdot.done{background:var(--mint);}
+  .qdot.wrong{background:var(--coral);}
+  .qdot.current{background:var(--sun);}
+
+  .timer-wrap{height:12px;border-radius:8px;background:var(--line);overflow:hidden;margin-bottom:18px;border:1px solid #d9e0ea;}
+  .timer-bar{height:100%;width:100%;border-radius:8px;background:linear-gradient(90deg,var(--mint),#4FE3C1);transition:width 1s linear,background .3s;}
+  .timer-bar.warn{background:linear-gradient(90deg,var(--sun),#ffdb7a);}
+  .timer-bar.danger{background:linear-gradient(90deg,var(--coral),#ff9088);}
+
+  .prompt{text-align:center;font-weight:800;font-size:16px;margin:2px 0 16px;color:var(--ink-soft);}
+
+  .compare-row{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;background:#F8FAFD;border:2.5px dashed #D6E0EC;border-radius:20px;padding:20px 10px;}
+  .disp-num{font-family:'Baloo 2','Cairo',sans-serif;font-size:76px;font-weight:700;color:var(--sky-dark);line-height:1;}
+  .disp-sym{font-weight:900;font-size:44px;color:#b9c4d2;}
+  .disp-blank{font-family:'Baloo 2','Cairo',sans-serif;font-size:88px;font-weight:900;color:var(--coral);}
+
+  .answers{display:flex;gap:10px;margin-top:22px;}
+  .ans-btn{flex:1;background:#fff;border:3px solid var(--line);border-radius:18px;padding:16px 6px;font-family:inherit;font-weight:900;font-size:30px;color:var(--sky-dark);cursor:pointer;box-shadow:0 5px 0 var(--line);transition:transform .08s ease,box-shadow .08s ease;}
+  .ans-btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line);}
+  .ans-btn.correct{background:#EAFBF5;border-color:var(--mint);color:#159c7b;box-shadow:0 5px 0 #24b493;}
+  .ans-btn.wrong{background:#FFEEEC;border-color:var(--coral);color:#d8443a;box-shadow:0 5px 0 #e2564a;}
+  .ans-btn[disabled]{cursor:default;}
+  .ans-btn.dim{opacity:.5;}
+
+  .feedback{text-align:center;font-weight:800;font-size:15px;margin-top:14px;min-height:22px;color:var(--ink-soft);}
+  .feedback.good{color:#159c7b;}
+  .feedback.bad{color:#d8443a;}
+
+  /* ---------- certificate ---------- */
+  .cert-wrap{
+    background:linear-gradient(155deg,#FFFDF6,#FFF7E4);
+    border:3px solid var(--gold);
+    border-radius:22px;
+    padding:26px 18px;
+    position:relative;
+    text-align:center;
+    overflow:hidden;
+  }
+  .cert-wrap::before, .cert-wrap::after{
+    content:'';position:absolute;inset:8px;border:2px dashed #E6C877;border-radius:16px;pointer-events:none;
+  }
+  .cert-medal{font-size:44px;margin-bottom:4px;}
+  .cert-heading{font-weight:900;font-size:22px;color:var(--gold-dark);margin-bottom:2px;}
+  .cert-sub{font-size:12.5px;font-weight:700;color:#8a6a10;margin-bottom:16px;}
+  .cert-tothe{font-size:13px;font-weight:700;color:var(--ink-soft);margin-bottom:6px;}
+  .cert-name{
+    font-family:'Amiri','Cairo',serif;
+    font-weight:700;
+    font-size:44px;
+    color:var(--sky-dark);
+    margin-bottom:14px;
+    line-height:1.2;
+    word-break:break-word;
+  }
+  .cert-body{font-size:13.5px;font-weight:700;color:var(--ink);line-height:1.9;margin-bottom:14px;}
+  .cert-score-row{display:flex;gap:10px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+  .cert-stat{background:#fff;border:2px solid #EFE0B0;border-radius:14px;padding:10px 16px;min-width:90px;}
+  .cert-stat .n{display:block;font-weight:900;font-size:22px;color:var(--gold-dark);}
+  .cert-stat .l{font-size:11px;font-weight:700;color:var(--ink-soft);}
+  .cert-date{font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:6px;}
+  .cert-stars{font-size:20px;letter-spacing:4px;margin-bottom:10px;}
+  .cert-signature{margin-top:20px;text-align:center;}
+  .sig-line{width:150px;height:1.5px;background:#C9962A;margin:0 auto 8px;opacity:.6;}
+  .sig-name{font-weight:900;font-size:15px;color:var(--ink);}
+  .sig-title{font-size:11.5px;font-weight:700;color:var(--ink-soft);margin-top:2px;}
+
+  .restart-btn{
+    display:block;width:100%;margin-top:18px;background:linear-gradient(155deg,var(--sky),var(--sky-dark));
+    border:none;color:#fff;font-family:inherit;font-weight:800;font-size:15px;padding:13px;
+    border-radius:16px;box-shadow:0 5px 0 #146f95;cursor:pointer;
+  }
+  .restart-btn:active{transform:translateY(3px);box-shadow:0 2px 0 #146f95;}
+  .cert-hint{text-align:center;font-size:11.5px;color:var(--ink-soft);font-weight:600;margin-top:10px;}
+
+  .hidden{display:none !important;}
+
+  @media (max-width:380px){
+    .disp-num{font-size:44px;}
+    .disp-blank{font-size:56px;}
+    .ans-btn{font-size:22px;}
+    .player-name{font-size:21px;}
+    .cert-name{font-size:32px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-badge" id="brandBadge">🔢</div>
+      <div>
+        <div class="brand-title">الرياضيات - الصف الثاني</div>
+        <div class="brand-sub" id="brandSub">العب مع عائلتك: أكبر ولا أصغر؟</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== SETUP SCREEN ===================== -->
+  <div id="setupScreen" class="card">
+    <label class="field-label" for="nameInput">اسمك</label>
+    <div class="field-hint">اكتب اسمك، وادعُ أحد أفراد أسرتك يجلس معك ويشجعك!</div>
+    <input id="nameInput" type="text" placeholder="مثال: سلطان">
+
+    <div style="margin-top:20px;">
+      <span class="field-label">مدة كل سؤال</span>
+      <div class="time-row">
+        <div class="time-opt active" id="timeOpt10" data-t="10">١٠ ثوانٍ<span class="sub">سريع</span></div>
+        <div class="time-opt" id="timeOpt20" data-t="20">٢٠ ثانية<span class="sub">مريح</span></div>
+      </div>
+    </div>
+
+    <button class="start-btn" id="startBtn" disabled>ابدأ اللعب</button>
+    <div class="family-note">🏠 عشر أسئلة فقط، وفي النهاية تحصل على شهادة تفوّق باسمك تقدر تعرضها لعائلتك!</div>
+  </div>
+
+  <!-- ===================== GAME SCREEN ===================== -->
+  <div id="gameScreen" class="hidden">
+    <div class="player-banner">
+      <div class="q-progress" id="qProgress">السؤال ١ من ١٠</div>
+      <div class="player-name" id="playerName">سلطان</div>
+      <div class="q-dots" id="qDots"></div>
+    </div>
+
+    <div class="timer-wrap"><div class="timer-bar" id="timerBar"></div></div>
+
+    <div class="card">
+      <div class="prompt" id="promptText">أي إشارة تناسب المقارنة؟</div>
+      <div class="compare-row" id="displayRow"></div>
+      <div class="answers" id="answers"></div>
+      <div class="feedback" id="feedback"></div>
+    </div>
+  </div>
+
+  <!-- ===================== CERTIFICATE SCREEN ===================== -->
+  <div id="certScreen" class="hidden">
+    <div class="cert-wrap">
+      <div class="cert-medal">🏆</div>
+      <div class="cert-heading">شهادة تفوّق</div>
+      <div class="cert-sub" id="certSub">الرياضيات - الصف الثاني</div>
+      <div class="cert-stars" id="certStars">⭐⭐⭐</div>
+      <div class="cert-tothe">تُمنح هذه الشهادة إلى</div>
+      <div class="cert-name" id="certName">سلطان</div>
+      <div class="cert-body" id="certBody">لإكماله عشرة أسئلة في مقارنة الأعداد (أكبر من - أصغر من - يساوي) بنجاح، واجتهاده وتفوّقه بمساعدة عائلته الغالية</div>
+      <div class="cert-score-row">
+        <div class="cert-stat"><span class="n" id="certScore">١٠/١٠</span><span class="l">الدرجة</span></div>
+        <div class="cert-stat"><span class="n" id="certTime">٥٥ث</span><span class="l">الوقت الكلي</span></div>
+      </div>
+      <div class="cert-date" id="certDate"></div>
+      <div class="cert-signature">
+        <div class="sig-line"></div>
+        <div class="sig-name">الأستاذ محمد مشعل العنزي</div>
+        <div class="sig-title">معلم مادة الرياضيات - الصف الثاني - موجه صحي</div>
+      </div>
+    </div>
+    <div class="cert-hint">📸 تقدر تأخذ لقطة شاشة للشهادة وتشاركها مع عائلتك!</div>
+    <button class="restart-btn" id="restartBtn">العب مرة أخرى</button>
+  </div>
+
+</div>
+
+<script src="engine.js"></script>
+<script>
+(function(){
+  const params = new URLSearchParams(location.search);
+  const topic = params.get('topic') || 'compare';
+  const lessonTitle = params.get('title') || '';
+  const range = /رقمين/.test(lessonTitle) ? 'twoDigit' : 'basic';
+  const meta = MathEngine.TOPIC_META[topic] || MathEngine.TOPIC_META.compare;
+  document.getElementById('brandBadge').textContent = meta.icon;
+  document.getElementById('brandSub').textContent = 'العب مع عائلتك: ' + meta.label;
+  document.getElementById('certSub').textContent = 'الرياضيات - الصف الثاني — ' + meta.label;
+  document.getElementById('certBody').textContent = 'لإكماله عشرة أسئلة في ' + meta.label + ' بنجاح، واجتهاده وتفوّقه بمساعدة عائلته الغالية';
+
+  const TOTAL_QUESTIONS = 10;
+
+  let TIME_LIMIT = 10;
+  let playerName = '';
+  let questionIndex = 0;
+  let correctCount = 0;
+  let totalTime = 0;
+  let current = null;
+  let timeLeft = TIME_LIMIT;
+  let timerId = null;
+  let answered = false;
+  let qResults = [];
+
+  // ---------- elements ----------
+  const nameInput = document.getElementById('nameInput');
+  const timeOpt10 = document.getElementById('timeOpt10');
+  const timeOpt20 = document.getElementById('timeOpt20');
+  const startBtn = document.getElementById('startBtn');
+
+  const setupScreen = document.getElementById('setupScreen');
+  const gameScreen = document.getElementById('gameScreen');
+  const certScreen = document.getElementById('certScreen');
+
+  const qProgress = document.getElementById('qProgress');
+  const playerNameEl = document.getElementById('playerName');
+  const qDots = document.getElementById('qDots');
+  const timerBar = document.getElementById('timerBar');
+  const displayRow = document.getElementById('displayRow');
+  const promptText = document.getElementById('promptText');
+  const answersWrap = document.getElementById('answers');
+  const feedback = document.getElementById('feedback');
+
+  const certName = document.getElementById('certName');
+  const certScore = document.getElementById('certScore');
+  const certTime = document.getElementById('certTime');
+  const certDate = document.getElementById('certDate');
+  const certStars = document.getElementById('certStars');
+  const restartBtn = document.getElementById('restartBtn');
+
+  // ---------- helpers ----------
+  function toArabicDigits(n){
+    const map = ['٠','١','٢','٣','٤','٥','٦','٧','٨','٩'];
+    return String(n).split('').map(ch => /\d/.test(ch) ? map[ch] : ch).join('');
+  }
+  function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+
+  nameInput.addEventListener('input', ()=>{
+    startBtn.disabled = nameInput.value.trim().length === 0;
+  });
+
+  timeOpt10.addEventListener('click', ()=>{ TIME_LIMIT=10; timeOpt10.classList.add('active'); timeOpt20.classList.remove('active'); });
+  timeOpt20.addEventListener('click', ()=>{ TIME_LIMIT=20; timeOpt20.classList.add('active'); timeOpt10.classList.remove('active'); });
+
+  // ---------- game flow ----------
+  function startGame(){
+    playerName = nameInput.value.trim();
+    if(!playerName) return;
+    questionIndex = 0;
+    correctCount = 0;
+    totalTime = 0;
+    setupScreen.classList.add('hidden');
+    certScreen.classList.add('hidden');
+    gameScreen.classList.remove('hidden');
+    buildQDots();
+    qResults = new Array(TOTAL_QUESTIONS).fill('pending');
+    loadQuestion();
+  }
+  startBtn.addEventListener('click', startGame);
+
+  function buildQDots(){
+    qDots.innerHTML = '';
+    for(let i=0;i<TOTAL_QUESTIONS;i++){
+      const d = document.createElement('div');
+      d.className = 'qdot';
+      d.id = 'qdot'+i;
+      qDots.appendChild(d);
+    }
+  }
+  function updateQDots(){
+    for(let i=0;i<TOTAL_QUESTIONS;i++){
+      const d = document.getElementById('qdot'+i);
+      if(!d) continue;
+      d.className = 'qdot';
+      const res = qResults[i];
+      if(res === 'right') d.classList.add('done');
+      else if(res === 'wrong') d.classList.add('wrong');
+      else if(i === questionIndex) d.classList.add('current');
+    }
+  }
+
+  function renderDisplay(parts){
+    displayRow.innerHTML = '';
+    parts.forEach(p=>{
+      const el = document.createElement('span');
+      if(p.t==='n'){ el.className='disp-num'; el.textContent = toArabicDigits(p.v); }
+      else if(p.t==='s'){ el.className='disp-sym'; el.textContent = p.v; }
+      else { el.className='disp-blank'; el.textContent = '؟'; }
+      displayRow.appendChild(el);
+    });
+  }
+
+  function loadQuestion(){
+    qProgress.textContent = 'السؤال ' + toArabicDigits(questionIndex+1) + ' من ' + toArabicDigits(TOTAL_QUESTIONS);
+    playerNameEl.textContent = playerName;
+    updateQDots();
+
+    answered = false;
+    feedback.textContent = '';
+    feedback.className = 'feedback';
+
+    current = MathEngine.generate(topic, {range});
+    promptText.textContent = current.prompt;
+    renderDisplay(current.parts);
+
+    answersWrap.innerHTML = '';
+    current.options.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.className = 'ans-btn';
+      btn.textContent = current.optionType==='symbol' ? MathEngine.symbolFor(opt) : toArabicDigits(opt);
+      btn.dataset.val = opt;
+      answersWrap.appendChild(btn);
+    });
+
+    startTimer();
+  }
+
+  function startTimer(){
+    clearInterval(timerId);
+    timeLeft = TIME_LIMIT;
+    timerBar.style.width = '100%';
+    timerBar.classList.remove('warn','danger');
+    timerId = setInterval(()=>{
+      timeLeft -= 1;
+      const pct = Math.max(0, (timeLeft/TIME_LIMIT)*100);
+      timerBar.style.width = pct + '%';
+      if(timeLeft <= Math.ceil(TIME_LIMIT*0.3)) timerBar.classList.add('danger');
+      else if(timeLeft <= Math.ceil(TIME_LIMIT*0.6)) timerBar.classList.add('warn');
+      if(timeLeft <= 0){
+        clearInterval(timerId);
+        if(!answered) handleAnswer(null);
+      }
+    },1000);
+  }
+
+  function handleAnswer(choice){
+    if(answered) return;
+    answered = true;
+    clearInterval(timerId);
+
+    const isRight = choice === current.answer;
+    const timeTaken = choice === null ? TIME_LIMIT : (TIME_LIMIT - timeLeft);
+    totalTime += timeTaken;
+
+    Array.from(answersWrap.children).forEach(btn=>{
+      btn.disabled = true;
+      const bv = current.optionType==='symbol' ? btn.dataset.val : Number(btn.dataset.val);
+      if(bv === current.answer) btn.classList.add('correct');
+      else if(bv === choice && !isRight) btn.classList.add('wrong');
+      else btn.classList.add('dim');
+    });
+
+    const shownAnswer = current.optionType==='symbol' ? MathEngine.symbolFor(current.answer) : toArabicDigits(current.answer);
+    if(isRight){
+      correctCount += 1;
+      qResults[questionIndex] = 'right';
+      feedback.textContent = 'صحيح! 👏';
+      feedback.classList.add('good');
+    } else {
+      qResults[questionIndex] = 'wrong';
+      feedback.textContent = (choice===null ? 'انتهى الوقت! ' : 'إجابة خاطئة، ') + 'الصحيح هو ' + shownAnswer;
+      feedback.classList.add('bad');
+    }
+    updateQDots();
+
+    setTimeout(advance, 1400);
+  }
+
+  function advance(){
+    questionIndex += 1;
+    if(questionIndex < TOTAL_QUESTIONS){
+      loadQuestion();
+      return;
+    }
+    showCertificate();
+  }
+
+  answersWrap.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.ans-btn');
+    if(!btn || answered) return;
+    const val = current.optionType==='symbol' ? btn.dataset.val : Number(btn.dataset.val);
+    handleAnswer(val);
+  });
+
+  // ---------- certificate ----------
+  function starsFor(c){
+    if(c >= 9) return '⭐⭐⭐';
+    if(c >= 6) return '⭐⭐';
+    return '⭐';
+  }
+
+  function showCertificate(){
+    gameScreen.classList.add('hidden');
+    certScreen.classList.remove('hidden');
+
+    certName.textContent = playerName;
+    certScore.textContent = toArabicDigits(correctCount) + '/' + toArabicDigits(TOTAL_QUESTIONS);
+    certTime.textContent = toArabicDigits(totalTime) + 'ث';
+    certStars.textContent = starsFor(correctCount);
+    const now = new Date();
+    certDate.textContent = now.toLocaleDateString('ar-SA');
+  }
+
+  restartBtn.addEventListener('click', ()=>{
+    certScreen.classList.add('hidden');
+    setupScreen.classList.remove('hidden');
+    nameInput.value = '';
+    startBtn.disabled = true;
+  });
+
+})();
+</script>
+</body>
+</html>
