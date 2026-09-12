@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>الاختبار</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&family=Baloo+2:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --grape:#8B6DD9; --grape-dark:#6a52b3; --grape-light:#F1EEFB; --grape-mid:#DCD3F5;
+    --red:#C0392B; --red-dark:#96271C;
+    --gold:#F2C230; --gold-dark:#B98B0E;
+    --teal:#2E8B7D; --teal-dark:#1F6357;
+    --ink:#22303F; --ink-soft:#5C6B7A; --line:#E3E8EE; --paper:#F7F8FA;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:'Cairo', sans-serif;
+    background:
+      radial-gradient(circle at 10% 0%, #F1EEFB 0%, transparent 45%),
+      radial-gradient(circle at 95% 10%, #FFF7E0 0%, transparent 40%),
+      var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    padding:0 0 40px;
+  }
+  .app{width:100%;max-width:680px;margin:0 auto;}
+
+  .topbar{
+    background:linear-gradient(135deg, var(--grape), var(--grape-dark));
+    padding:16px 16px 34px;
+  }
+  .topbar-inner{display:flex;align-items:center;gap:10px;}
+  .back-link{
+    display:flex;align-items:center;justify-content:center;gap:5px;
+    height:36px;padding:0 14px;border-radius:10px;background:rgba(255,255,255,.18);
+    color:#fff;text-decoration:none;font-size:12.5px;font-weight:800;flex-shrink:0;white-space:nowrap;
+  }
+  .topic-icon{
+    width:42px;height:42px;border-radius:12px;background:rgba(255,255,255,.16);
+    display:flex;align-items:center;justify-content:center;font-size:21px;flex-shrink:0;
+  }
+  .topbar-title{font-weight:800;font-size:16px;color:#fff;}
+  .topbar-sub{font-weight:500;font-size:11.5px;color:#ece5fb;}
+
+  .content-wrap{padding:0 14px;margin-top:-20px;}
+
+  .progress-card{
+    background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px 16px;
+    box-shadow:0 6px 16px rgba(40,20,70,.08);margin-bottom:16px;
+  }
+  .progress-label{font-size:11.5px;font-weight:800;color:var(--ink-soft);margin-bottom:8px;text-align:center;}
+  .dots{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;}
+  .dot{width:22px;height:8px;border-radius:5px;background:var(--line);cursor:pointer;}
+  .dot.answered{background:var(--grape);}
+  .dot.current{background:var(--gold);}
+
+  .card{background:#fff;border:1px solid var(--line);border-radius:22px;padding:24px 18px;box-shadow:0 6px 18px rgba(40,20,70,.08);}
+  .q-label{text-align:center;font-weight:800;font-size:12.5px;color:var(--ink-soft);margin-bottom:4px;}
+  .prompt{text-align:center;font-weight:800;font-size:16.5px;margin:2px 0 20px;color:var(--ink);}
+
+  .display-row{
+    display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;
+    background:var(--grape-light);border:2px dashed var(--grape-mid);border-radius:20px;padding:26px 12px;margin-bottom:22px;
+  }
+  .disp-num{font-family:'Baloo 2','Cairo',sans-serif;font-weight:700;font-size:44px;color:var(--grape-dark);}
+  .disp-sym{font-weight:900;font-size:34px;color:#b9adde;}
+  .disp-blank{font-family:'Baloo 2','Cairo',sans-serif;font-weight:900;font-size:48px;color:var(--red);}
+
+  .answers{display:flex;gap:10px;margin-bottom:6px;}
+  .ans-btn{
+    flex:1;background:#fff;border:2.5px solid var(--line);border-radius:16px;padding:16px 6px;
+    font-family:inherit;font-weight:900;font-size:26px;color:var(--grape-dark);cursor:pointer;
+    transition:transform .08s ease;
+  }
+  .ans-btn:active{transform:translateY(2px);}
+  .ans-btn.picked{background:var(--grape-light);border-color:var(--grape);color:var(--grape-dark);}
+  .ans-btn.review-correct{background:#EAFBF5;border-color:var(--teal);color:var(--teal-dark);}
+  .ans-btn.review-wrong{background:#FBEAE8;border-color:var(--red);color:var(--red-dark);}
+  .ans-btn[disabled]{cursor:default;}
+
+  .nav-row{display:flex;gap:10px;margin-top:18px;}
+  .nav-btn{
+    flex:1;font-family:inherit;font-weight:800;font-size:14px;border-radius:13px;padding:12px;cursor:pointer;
+  }
+  .nav-btn.prev{background:#fff;border:2px solid var(--line);color:var(--ink);}
+  .nav-btn.next{background:var(--grape);color:#fff;border:none;}
+  .nav-btn.submit{background:linear-gradient(155deg,var(--gold),var(--gold-dark));color:#5c4400;border:none;}
+  .nav-btn[disabled]{opacity:.4;cursor:not-allowed;}
+
+  .unanswered-note{text-align:center;font-size:11.5px;font-weight:700;color:var(--red-dark);margin-top:10px;min-height:16px;}
+
+  /* ---------- summary ---------- */
+  .summary-emoji{font-size:48px;text-align:center;}
+  .summary-title{font-weight:900;font-size:21px;margin:6px 0 2px;text-align:center;color:var(--grape-dark);}
+  .summary-sub{color:var(--ink-soft);font-weight:600;font-size:13px;margin-bottom:18px;text-align:center;}
+  .summary-score{text-align:center;font-weight:900;font-size:34px;color:var(--grape-dark);margin-bottom:18px;}
+
+  .review-list{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+  .review-row{
+    display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:#F8FAFC;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12.5px;font-weight:700;
+  }
+  .review-row .rr-mark{font-size:15px;flex-shrink:0;}
+  .review-row.right .rr-mark{color:var(--teal-dark);}
+  .review-row.wrong .rr-mark{color:var(--red-dark);}
+
+  .summary-actions{display:flex;flex-direction:column;gap:10px;}
+  .retry-btn, .back-btn{
+    font-family:inherit;font-weight:800;font-size:14.5px;border-radius:14px;padding:13px;
+    cursor:pointer;text-align:center;text-decoration:none;
+  }
+  .retry-btn{background:var(--grape);color:#fff;border:none;}
+  .back-btn{background:#fff;border:2px solid var(--line);color:var(--ink);}
+
+  .hidden{display:none !important;}
+
+  @media (max-width:380px){
+    .disp-num{font-size:32px;}
+    .disp-blank{font-size:34px;}
+    .ans-btn{font-size:20px;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="back-link" href="index.html">🏠 الرئيسية</a>
+      <div class="topic-icon" id="topicIcon">🧠</div>
+      <div>
+        <div class="topbar-title" id="topbarTitle">الاختبار</div>
+        <div class="topbar-sub">أجب عن كل الأسئلة ثم سلّم الاختبار</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-wrap">
+    <div class="progress-card">
+      <div class="progress-label" id="progressLabel">السؤال ١ من ٨</div>
+      <div class="dots" id="dots"></div>
+    </div>
+
+    <div id="quizScreen" class="card">
+      <div class="q-label" id="qLabel"></div>
+      <div class="prompt" id="promptText"></div>
+      <div class="display-row" id="displayRow"></div>
+      <div class="answers" id="answers"></div>
+      <div class="nav-row">
+        <button class="nav-btn prev" id="prevBtn">◀ السابق</button>
+        <button class="nav-btn next" id="nextBtn">التالي ▶</button>
+        <button class="nav-btn submit hidden" id="submitBtn">تسليم الاختبار ✅</button>
+      </div>
+      <div class="unanswered-note" id="unansweredNote"></div>
+    </div>
+
+    <div id="summaryScreen" class="card hidden">
+      <div class="summary-emoji" id="summaryEmoji">🌟</div>
+      <div class="summary-title" id="summaryTitle">أحسنت!</div>
+      <div class="summary-sub">نتيجتك في الاختبار</div>
+      <div class="summary-score" id="summaryScore">٨ / ٨</div>
+      <div class="review-list" id="reviewList"></div>
+      <div class="summary-actions">
+        <button class="retry-btn" id="retryBtn">اختبار جديد</button>
+        <a class="back-btn" href="index.html">العودة إلى الدرس</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script src="engine.js"></script>
+<script>
+(function(){
+  const TOTAL = 8;
+
+  const params = new URLSearchParams(location.search);
+  const topic = params.get('topic') || 'pattern';
+  const title = params.get('title') || '';
+  const range = params.get('range') || (/رقمين/.test(title) ? 'twoDigit' : 'basic');
+  const meta = MathEngine.TOPIC_META[topic] || MathEngine.TOPIC_META.pattern;
+
+  document.getElementById('topicIcon').textContent = meta.icon;
+  document.getElementById('topbarTitle').textContent = 'اختبار — ' + (title || meta.label);
+
+  let index = 0;
+  let questions = [];       // generated once at start
+  let answersGiven = new Array(TOTAL).fill(null);
+  let submitted = false;
+
+  const dots = document.getElementById('dots');
+  const progressLabel = document.getElementById('progressLabel');
+  const qLabel = document.getElementById('qLabel');
+  const promptText = document.getElementById('promptText');
+  const displayRow = document.getElementById('displayRow');
+  const answersWrap = document.getElementById('answers');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const unansweredNote = document.getElementById('unansweredNote');
+  const quizScreen = document.getElementById('quizScreen');
+  const summaryScreen = document.getElementById('summaryScreen');
+  const summaryEmoji = document.getElementById('summaryEmoji');
+  const summaryTitle = document.getElementById('summaryTitle');
+  const summaryScore = document.getElementById('summaryScore');
+  const reviewList = document.getElementById('reviewList');
+  const retryBtn = document.getElementById('retryBtn');
+
+  function buildQuestions(){
+    questions = [];
+    for(let i=0;i<TOTAL;i++) questions.push(MathEngine.generate(topic, {range}));
+  }
+
+  function buildDots(){
+    dots.innerHTML = '';
+    for(let i=0;i<TOTAL;i++){
+      const d = document.createElement('div');
+      d.className = 'dot';
+      d.id = 'dot'+i;
+      d.addEventListener('click', ()=>{ if(!submitted){ index = i; renderQuestion(); } });
+      dots.appendChild(d);
+    }
+  }
+  function updateDots(){
+    for(let i=0;i<TOTAL;i++){
+      const d = document.getElementById('dot'+i);
+      d.className = 'dot';
+      if(answersGiven[i] !== null) d.classList.add('answered');
+      if(i===index) d.classList.add('current');
+    }
+  }
+
+  function renderDisplay(parts){
+    displayRow.innerHTML = '';
+    parts.forEach(p=>{
+      const el = document.createElement('span');
+      if(p.t==='n'){ el.className='disp-num'; el.textContent = MathEngine.toArabicDigits(p.v); }
+      else if(p.t==='s'){ el.className='disp-sym'; el.textContent = p.v; }
+      else { el.className='disp-blank'; el.textContent = '؟'; }
+      displayRow.appendChild(el);
+    });
+  }
+
+  function renderQuestion(){
+    const q = questions[index];
+    qLabel.textContent = 'سؤال ' + MathEngine.toArabicDigits(index+1);
+    progressLabel.textContent = 'السؤال ' + MathEngine.toArabicDigits(index+1) + ' من ' + MathEngine.toArabicDigits(TOTAL);
+    promptText.textContent = q.prompt;
+    renderDisplay(q.parts);
+
+    answersWrap.innerHTML = '';
+    q.options.forEach(opt=>{
+      const btn = document.createElement('button');
+      btn.className = 'ans-btn';
+      btn.textContent = q.optionType==='symbol' ? MathEngine.symbolFor(opt) : MathEngine.toArabicDigits(opt);
+      btn.dataset.val = opt;
+      if(answersGiven[index] !== null){
+        const picked = q.optionType==='symbol' ? String(answersGiven[index]) : Number(answersGiven[index]);
+        if(picked === opt) btn.classList.add('picked');
+      }
+      answersWrap.appendChild(btn);
+    });
+
+    prevBtn.disabled = (index === 0);
+    if(index === TOTAL-1){
+      nextBtn.classList.add('hidden');
+      submitBtn.classList.remove('hidden');
+    } else {
+      nextBtn.classList.remove('hidden');
+      submitBtn.classList.add('hidden');
+    }
+    unansweredNote.textContent = '';
+    updateDots();
+  }
+
+  answersWrap.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.ans-btn');
+    if(!btn) return;
+    const q = questions[index];
+    const val = q.optionType==='symbol' ? btn.dataset.val : Number(btn.dataset.val);
+    answersGiven[index] = val;
+    Array.from(answersWrap.children).forEach(b=> b.classList.remove('picked'));
+    btn.classList.add('picked');
+    updateDots();
+  });
+
+  prevBtn.addEventListener('click', ()=>{ if(index>0){ index--; renderQuestion(); } });
+  nextBtn.addEventListener('click', ()=>{ if(index<TOTAL-1){ index++; renderQuestion(); } });
+
+  submitBtn.addEventListener('click', ()=>{
+    const unanswered = answersGiven.findIndex(a => a === null);
+    if(unanswered !== -1){
+      unansweredNote.textContent = 'فيه سؤال لم تجب عليه بعد — السؤال ' + MathEngine.toArabicDigits(unanswered+1);
+      index = unanswered;
+      renderQuestion();
+      return;
+    }
+    showSummary();
+  });
+
+  function showSummary(){
+    submitted = true;
+    let correctCount = 0;
+    reviewList.innerHTML = '';
+    questions.forEach((q, i)=>{
+      const isRight = answersGiven[i] === q.answer;
+      if(isRight) correctCount++;
+      const row = document.createElement('div');
+      row.className = 'review-row ' + (isRight ? 'right' : 'wrong');
+      const shownCorrect = q.optionType==='symbol' ? MathEngine.symbolFor(q.answer) : MathEngine.toArabicDigits(q.answer);
+      row.innerHTML = '<span>سؤال ' + MathEngine.toArabicDigits(i+1) + '</span><span class="rr-mark">' + (isRight ? '✅ صحيح' : '❌ الصحيح: ' + shownCorrect) + '</span>';
+      reviewList.appendChild(row);
+    });
+
+    quizScreen.classList.add('hidden');
+    summaryScreen.classList.remove('hidden');
+    summaryScore.textContent = MathEngine.toArabicDigits(correctCount) + ' / ' + MathEngine.toArabicDigits(TOTAL);
+    if(correctCount === TOTAL){ summaryEmoji.textContent='🌟'; summaryTitle.textContent='ممتاز! إجابات كاملة'; }
+    else if(correctCount >= TOTAL*0.6){ summaryEmoji.textContent='👍'; summaryTitle.textContent='أحسنت صنعًا!'; }
+    else { summaryEmoji.textContent='💪'; summaryTitle.textContent='واصل التدريب'; }
+  }
+
+  retryBtn.addEventListener('click', ()=>{
+    index = 0; submitted = false;
+    answersGiven = new Array(TOTAL).fill(null);
+    buildQuestions();
+    summaryScreen.classList.add('hidden');
+    quizScreen.classList.remove('hidden');
+    buildDots();
+    renderQuestion();
+  });
+
+  buildQuestions();
+  buildDots();
+  renderQuestion();
+})();
+</script>
+</body>
+</html>
